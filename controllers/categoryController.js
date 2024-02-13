@@ -71,7 +71,7 @@ categoriesRouter.get('/:id', (req, res) => {
 // Get list of all category
 categoriesRouter.get('/', (req, res) => {
   if (categories.length > 0)
-  res.json(categories.sort((a, b) => a.name.localeCompare(b.name)));
+  res.json(categories.toSorted((a, b) => a.name.localeCompare(b.name)));
   else
     res.status(404).json({ error: "No categories found" });
 });

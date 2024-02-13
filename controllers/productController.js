@@ -71,7 +71,7 @@ productsRouter.get('/:id', (req, res) => {
 // Get list of all product
 productsRouter.get('/', (req, res) => {
   if (products.length > 0)
-    res.json(products.sort((a, b) => a.name.localeCompare(b.name)));
+    res.json(products.toSorted((a, b) => a.name.localeCompare(b.name)));
   else
     res.status(404).json({ error: "No products found" });
 });
