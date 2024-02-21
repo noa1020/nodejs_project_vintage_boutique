@@ -1,1 +1,14 @@
-[{"id":"3","name":"Cars"},{"id":"1","name":"Electrical Products"},{"id":"2","name":"clothes"}]
+[
+    {
+        "id": "3",
+        "name": "Cars"
+    },
+    {
+        "id": "1",
+        "name": "Electrical Products"
+    },
+    {
+        "id": "2",
+        "name": "clothes"
+    }
+]

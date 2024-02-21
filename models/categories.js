@@ -11,7 +11,7 @@ class Category {
         if (!this.id || !this.name) {
             throw new Error('Missing required fields for saving the category.');
         }
-        if(categories.find(category=>category.id===this.id)){
+        if (categories.find(category => category.id === this.id)) {
             throw new Error('Id category already exists.');
         }
         categories.push(this);

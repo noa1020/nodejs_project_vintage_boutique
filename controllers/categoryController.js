@@ -10,10 +10,11 @@ categoriesRouter.post('/', async (req, res) => {
   const newCategory = new Category(data.id, data.name);
   try {
     await newCategory.save();
-    res.status(201).json(newCategory);  } 
-    catch (err) {
-      res.status(500).send(err.message)  
-    }
+    res.status(201).json(newCategory);
+  }
+  catch (err) {
+    res.status(500).send(err.message)
+  }
 });
 
 //Update category
@@ -24,7 +25,7 @@ categoriesRouter.put('/:id', async (req, res) => {
     await newCategory.update();
     res.status(200).json(newCategory);
   } catch (err) {
-    res.status(500).send(err.message)  
+    res.status(500).send(err.message)
   }
 
 });
@@ -39,7 +40,7 @@ categoriesRouter.delete('/:id', async (req, res) => {
       res.status(200).send('category deleted successfully');
     }
     catch (err) {
-      res.status(500).send(err)  
+      res.status(500).send(err)
     }
   }
   else

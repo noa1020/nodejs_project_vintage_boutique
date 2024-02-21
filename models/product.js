@@ -7,14 +7,14 @@ class Product {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.categoryId = categoryId; 
+        this.categoryId = categoryId;
     }
 
     async save() {
         if (!this.id || !this.name || !this.price || !this.categoryId) {
             throw new Error('Missing required fields for saving the product.');
         }
-        if(products.find(product=>product.id===this.id)){
+        if (products.find(product => product.id === this.id)) {
             throw new Error('Id product already exists.');
         }
         products.push(this);

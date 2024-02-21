@@ -11,21 +11,22 @@ productsRouter.post('/', async (req, res) => {
   const newProduct = new Product(data.id, data.name, data.price, data.categoryId);
   try {
     await newProduct.save();
-    res.status(201).json(newProduct);  } 
-    catch (err) {
-      res.status(500).send(err.message)  
-    }
+    res.status(201).json(newProduct);
+  }
+  catch (err) {
+    res.status(500).send(err.message)
+  }
 });
 
 //Update product
 productsRouter.put('/:id', async (req, res) => {
   let data = req.body;
-  const newProduct = new Product(req.params.id, data.name,data.price, data.categoryId);
+  const newProduct = new Product(req.params.id, data.name, data.price, data.categoryId);
   try {
     await newProduct.update();
     res.status(200).json(newProduct);
   } catch (err) {
-    res.status(500).send(err.message)  
+    res.status(500).send(err.message)
   }
 
 });
@@ -40,7 +41,7 @@ productsRouter.delete('/:id', async (req, res) => {
       res.status(200).send('Product deleted successfully');
     }
     catch (err) {
-      res.status(500).send(err)  
+      res.status(500).send(err)
     }
   }
   else
