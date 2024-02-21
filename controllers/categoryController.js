@@ -2,65 +2,56 @@ const categories = require('../data/categories.json');
 const express = require('express');
 const categoriesRouter = express.Router();
 const fsPromises = require('fs').promises;
-
+const Category = require('../models/categories')
 
 //Add category
 categoriesRouter.post('/', async (req, res) => {
-    let data = req.body;
-    categories.push(data);
+  let data = req.body;
+  const newCategory = new Category(data.id, data.name);
+  try {
+    await newCategory.save();
+    res.status(201).json(newCategory);  } 
+    catch (err) {
+      res.status(500).send(err.message)  
+    }
+});
+
+//Update category
+categoriesRouter.put('/:id', async (req, res) => {
+  let data = req.body;
+  const newCategory = new Category(req.params.id, data.name);
+  try {
+    await newCategory.update();
+    res.status(200).json(newCategory);
+  } catch (err) {
+    res.status(500).send(err.message)  
+  }
+
+});
+
+//delete category
+categoriesRouter.delete('/:id', async (req, res) => {
+  const categoryIndex = categories.findIndex(category => category.id == req.params.id);
+  if (categoryIndex !== -1) {
+    categories.splice(categoryIndex, 1);
     try {
-        await fsPromises.writeFile('./data/categories.json', JSON.stringify(categories))
-        res.send('The new category: ' + JSON.stringify(data));
+      await fsPromises.writeFile('./data/categories.json', JSON.stringify(categories))
+      res.status(200).send('category deleted successfully');
     }
     catch (err) {
-        console.error(err);
+      res.status(500).send(err)  
     }
-  });
-  
-  //Update category
-  categoriesRouter.put('/', async (req, res) => {
-    let data = req.body;
-    const categoryIndex = categories.findIndex(category => category.id === data.id);
-    if (categoryIndex !== -1) {
-        const data = req.body;
-        if (data)
-        categories[categoryIndex] = data;
-
-        try {
-            await fsPromises.writeFile('./data/categories.json', JSON.stringify(categories))
-            res.send('Succeeded, the updated category: ' + JSON.stringify(categories[categoryIndex]));
-        }
-        catch (err) {
-            console.error(err);
-        }
-    }
-    else
+  }
+  else
     res.status(404).json({ error: "category not found" });
-  });
-  
-  
-  //delete category
-  categoriesRouter.delete('/', async (req, res) => {
-    const categoryIndex = categories.findIndex(category => category.id === req.body.id);
-    if (categoryIndex !== -1) {
-      categories.splice(categoryIndex, 1);
-        try {
-            await fsPromises.writeFile('./data/categories.json', JSON.stringify(categories))
-            res.send('Succeeded');
-        }
-        catch (err) {
-            console.error(err);
-        }
-    }
-    else
-        res.status(404).json({ error: "category  found" });
-  
-  });
-  
+
+});
+
+
 // Get categories details by ID
 categoriesRouter.get('/:id', (req, res) => {
   const { id } = req.params;
-  const category = categories.find((cat) => cat.id ==id);
+  const category = categories.find((cat) => cat.id == id);
   if (category)
     res.json(category);
   else
@@ -71,7 +62,7 @@ categoriesRouter.get('/:id', (req, res) => {
 // Get list of all category
 categoriesRouter.get('/', (req, res) => {
   if (categories.length > 0)
-  res.json(categories.toSorted((a, b) => a.name.localeCompare(b.name)));
+    res.json(categories.toSorted((a, b) => a.name.localeCompare(b.name)));
   else
     res.status(404).json({ error: "No categories found" });
 });

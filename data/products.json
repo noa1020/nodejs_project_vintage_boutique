@@ -1,1 +1,1 @@
-[{"id":"1","name":"char","category_id":"1"},{"id":"5","name":"cupboard","category_id":"1"},{"id":"3","name":"mazda","category_id":"3"},{"id":"2","name":"Product 2","category_id":"2"},{"id":"4","name":"table","category_id":"1"}]
+[{"id":"5","name":"air conditiner","price":"4000","categoryId":"1"},{"id":"1","name":"char","price":"580","categoryId":"1"},{"id":"3","name":"aaa","price":"300","categoryId":"2"},{"id":"2","name":"shirt","price":"40","categoryId":"2"}]
