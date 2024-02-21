@@ -1,41 +1,47 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
 const categoryController = require('./controllers/categoryController');
 const productController = require('./controllers/productController');
-const cors = require('cors');
+
 const app = express();
 
-const bodyParser = require('body-parser');
+// Middlewares
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//log middleware
+// Log middleware
 app.use((req, res, next) => {
-  console.log(`call to the system at ${new Date().toLocaleString()} to ${req.url}`);
+  console.log(`Call to the system at ${new Date().toLocaleString()} to ${req.url}`);
   next();
 });
 
-//Integrity check for put/post methods
+// Integrity check for put/post methods
 app.use((req, res, next) => {
   if ((req.method === 'PUT' || req.method === 'POST') && Object.keys(req.body).length === 0) {
     res.status(400).json({ error: "Request body is required for PUT and POST requests" });
-  }
-  else {
+  } else {
     next();
   }
 });
 
+// Routes
 app.use('/products', productController);
 app.use('/categories', categoryController);
 
+// CORS
 app.use(cors());
+
 // Server start
 app.listen(3000, () => {
-  console.log("listening on http://localhost:3000");
-})
+  console.log("Listening on http://localhost:3000");
+});
 
+// 404 Error handling
 app.get("*", (req, res) => {
   res.status(404).send('You have an error: Page not found');
-})
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

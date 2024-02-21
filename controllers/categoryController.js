@@ -1,72 +1,65 @@
-const categories = require('../data/categories.json');
 const express = require('express');
 const categoriesRouter = express.Router();
 const fsPromises = require('fs').promises;
-const Category = require('../models/categories')
+const Category = require('../models/categories');
+const categories = require('../data/categories.json');
 
-//Add category
+// Add category
 categoriesRouter.post('/', async (req, res) => {
-  let data = req.body;
-  const newCategory = new Category(data.id, data.name);
   try {
+    const newCategory = new Category(req.body.id, req.body.name);
     await newCategory.save();
     res.status(201).json(newCategory);
-  }
-  catch (err) {
-    res.status(500).send(err.message)
-  }
-});
-
-//Update category
-categoriesRouter.put('/:id', async (req, res) => {
-  let data = req.body;
-  const newCategory = new Category(req.params.id, data.name);
-  try {
-    await newCategory.update();
-    res.status(200).json(newCategory);
   } catch (err) {
-    res.status(500).send(err.message)
+    res.status(500).send(err.message);
   }
-
 });
 
-//delete category
+// Update category
+categoriesRouter.put('/:id', async (req, res) => {
+  try {
+    const updatedCategory = new Category(req.params.id, req.body.name);
+    await updatedCategory.update();
+    res.status(200).json(updatedCategory);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Delete category
 categoriesRouter.delete('/:id', async (req, res) => {
-  const categoryIndex = categories.findIndex(category => category.id == req.params.id);
-  if (categoryIndex !== -1) {
-    categories.splice(categoryIndex, 1);
-    try {
-      await fsPromises.writeFile('./data/categories.json', JSON.stringify(categories))
-      res.status(200).send('category deleted successfully');
+  try {
+    const categories = require('../data/categories.json');
+    const category = categories.find((cat) => cat.id == req.params.id);
+    if (!category) {
+      return res.status(404).send("Category not found");
     }
-    catch (err) {
-      res.status(500).send(err)
-    }
+
+    categories = categories.filter((cat) => cat.id !== req.params.id);
+    await fsPromises.writeFile('./data/categories.json', JSON.stringify(categories));
+    res.status(200).send('Category deleted successfully');
+  } catch (err) {
+    res.status(500).send(err.message);
   }
-  else
-    res.status(404).json({ error: "category not found" });
-
 });
 
-
-// Get categories details by ID
+// Get category by ID
 categoriesRouter.get('/:id', (req, res) => {
-  const { id } = req.params;
-  const category = categories.find((cat) => cat.id == id);
-  if (category)
+  const category = categories.find((cat) => cat.id == req.params.id);
+  if (category) {
     res.json(category);
-  else
-    res.status(404).json({ error: "Category not found" });
+  } else {
+    res.status(404).send("Category not found");
+  }
 });
 
-
-// Get list of all category
+// Get all categories
 categoriesRouter.get('/', (req, res) => {
-  if (categories.length > 0)
-    res.json(categories.toSorted((a, b) => a.name.localeCompare(b.name)));
-  else
-    res.status(404).json({ error: "No categories found" });
+  if (categories.length > 0) {
+    res.json(categories.sort((a, b) => a.name.localeCompare(b.name)));
+  } else {
+    res.status(404).send("No categories found");
+  }
 });
-
 
 module.exports = categoriesRouter;

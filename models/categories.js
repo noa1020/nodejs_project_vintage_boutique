@@ -6,7 +6,7 @@ class Category {
         this.id = id;
         this.name = name;
     }
-
+    //Add category
     async save() {
         if (!this.id || !this.name) {
             throw new Error('Missing required fields for saving the category.');
@@ -21,7 +21,7 @@ class Category {
             console.error(err);
         }
     }
-
+    //Update category
     async update() {
         const categoryIndex = categories.findIndex(category => category.id === this.id);
         if (categoryIndex !== -1) {

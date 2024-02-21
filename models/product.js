@@ -9,7 +9,7 @@ class Product {
         this.price = price;
         this.categoryId = categoryId;
     }
-
+    //Add product
     async save() {
         if (!this.id || !this.name || !this.price || !this.categoryId) {
             throw new Error('Missing required fields for saving the product.');
@@ -24,7 +24,7 @@ class Product {
             console.error(err);
         }
     }
-
+    //Update product
     async update() {
         const productIndex = products.findIndex(product => product.id === this.id);
         if (productIndex !== -1) {
