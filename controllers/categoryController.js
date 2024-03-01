@@ -3,25 +3,25 @@ const categoriesRouter = express.Router();
 const fsPromises = require('fs').promises;
 const Category = require('../models/categories');
 const categories = require('../data/categories.json');
+const jwt = require('jsonwebtoken');
 
 // Add category
 categoriesRouter.post('/', async (req, res) => {
 
-  const token = req.headers.authorization.split(' ')[1];
-  jwt.verify(token, 'your_secret_key', async (decoded) => {
+  const token = req.header('Authorization');
+  try {
+    const decoded = jwt.verify(token, '1234');
     if (decoded.userType === 'manager') {
-      try {
-        const newCategory = new Category(req.body.id, req.body.name);
-        await newCategory.save();
-        res.status(201).json(newCategory);
-      } catch (err) {
-        res.status(500).send(err.message);
-      }
+      const newCategory = new Category(req.body.id, req.body.name);
+      await newCategory.save();
+      res.status(201).json(newCategory);
     }
     else {
       res.status(500).send("only admin can add category");
     }
-  })
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 })
 
 // Update category
