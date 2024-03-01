@@ -10,21 +10,22 @@ productsRouter.post('/', async (req, res) => {
   const newProduct = new Product(data.id, data.name, data.price, data.categoryId);
   try {
     await newProduct.save();
-    res.status(201).json(newProduct);  } 
-    catch (err) {
-      res.status(500).send(err.message)  
-    }
+    res.status(201).json(newProduct);
+  }
+  catch (err) {
+    res.status(500).send(err.message)
+  }
 });
 
 //Update product
 productsRouter.put('/:id', async (req, res) => {
   let data = req.body;
-  const newProduct = new Product(req.params.id, data.name,data.price, data.categoryId);
+  const newProduct = new Product(req.params.id, data.name, data.price, data.categoryId);
   try {
     await newProduct.update();
     res.status(200).json(newProduct);
   } catch (err) {
-    res.status(500).send(err.message)  
+    res.status(500).send(err.message)
   }
 
 });
@@ -39,7 +40,7 @@ productsRouter.delete('/:id', async (req, res) => {
       res.status(200).send('Product deleted successfully');
     }
     catch (err) {
-      res.status(500).send(err)  
+      res.status(500).send(err)
     }
   }
   else
@@ -55,7 +56,7 @@ productsRouter.get('/:id', (req, res) => {
     res.json(newProductList.sort((a, b) => a.name.localeCompare(b.name)));
   }
   else
-    res.status(404).send("categoty not found" );
+    res.status(404).send("categoty not found");
 });
 
 
@@ -64,8 +65,7 @@ productsRouter.get('/', (req, res) => {
   if (products.length > 0)
     res.json(products.toSorted((a, b) => a.name.localeCompare(b.name)));
   else
-    res.status(404).send("No products found" );
+    res.status(404).send("No products found");
 });
-
 
 module.exports = productsRouter;

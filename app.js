@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const authenticateUser = require('./helper/auth.middleware');
 
 const categoryController = require('./controllers/categoryController');
 const productController = require('./controllers/productController');
+const userController = require('./controllers/userController');
 
 const app = express();
 
@@ -26,12 +28,23 @@ app.use((req, res, next) => {
   }
 });
 
+
+// Authentication check middleware
+app.use(authenticateUser);
+
 // Routes
+app.use('/user', userController);
 app.use('/products', productController);
 app.use('/categories', categoryController);
 
 // CORS
 app.use(cors());
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err); // Log the error to the console
+  res.status(500).json({ error: "An error occurred on the server. Please try again later." });
+});
 
 // Server start
 app.listen(3000, () => {
@@ -43,8 +56,3 @@ app.get("*", (req, res) => {
   res.status(404).send('You have an error: Page not found');
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err); // Log the error to the console
-  res.status(500).json({ error: "An error occurred on the server. Please try again later." });
-});

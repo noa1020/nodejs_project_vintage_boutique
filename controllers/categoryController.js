@@ -6,14 +6,23 @@ const categories = require('../data/categories.json');
 
 // Add category
 categoriesRouter.post('/', async (req, res) => {
-  try {
-    const newCategory = new Category(req.body.id, req.body.name);
-    await newCategory.save();
-    res.status(201).json(newCategory);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
+
+  const token = req.headers.authorization.split(' ')[1];
+  jwt.verify(token, 'your_secret_key', async (decoded) => {
+    if (decoded.userType === 'manager') {
+      try {
+        const newCategory = new Category(req.body.id, req.body.name);
+        await newCategory.save();
+        res.status(201).json(newCategory);
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    }
+    else {
+      res.status(500).send("only admin can add category");
+    }
+  })
+})
 
 // Update category
 categoriesRouter.put('/:id', async (req, res) => {
