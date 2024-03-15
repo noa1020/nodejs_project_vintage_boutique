@@ -1,10 +1,9 @@
 const express = require('express');
 const usersRouter = express.Router();
-const users = require('../data/users.json');
 const user = require('../models/users');
 const jwt = require('jsonwebtoken');
-const { use } = require('./productController');
 const bcrypt = require('bcrypt');
+const { UserModel } = require('../services/db');
 
 // User Registration (Sign Up)
 usersRouter.post('/signup', async (req, res) => {
@@ -23,7 +22,7 @@ usersRouter.post('/signup', async (req, res) => {
 usersRouter.post('/login', async (req, res) => {
     const { id, password } = req.body;
     // Find the user by id
-    const newuser = users.find(u => u.id == id);
+    const newuser = await UserModel.findById(parseInt(id));
     if (!newuser || !bcrypt.compareSync(password, newuser.password)) {
         return res.status(401).json({ message: 'Invalid id or password' });
     }
@@ -32,6 +31,5 @@ usersRouter.post('/login', async (req, res) => {
     newuser.token = token
     res.header("Authorization", token).send({ "token": token });
 });
-
 
 module.exports = usersRouter;

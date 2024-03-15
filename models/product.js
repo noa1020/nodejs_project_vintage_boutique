@@ -1,6 +1,4 @@
-const fsPromises = require('fs').promises;
-const { error } = require('console');
-const products = require('../data/products.json');
+const { ProductModel } = require('../services/db');
 
 class Product {
     constructor(id, name, price, categoryId) {
@@ -9,33 +7,35 @@ class Product {
         this.price = price;
         this.categoryId = categoryId;
     }
-    //Add product
+
+    // Add product
     async save() {
         if (!this.id || !this.name || !this.price || !this.categoryId) {
             throw new Error('Missing required fields for saving the product.');
         }
-        if (products.find(product => product.id === this.id)) {
-            throw new Error('Id product already exists.');
+        const existingProduct = await ProductModel.findById(parseInt(this.id));
+        if (existingProduct) {
+            throw new Error('Product with this ID already exists.');
         }
-        products.push(this);
-        try {
-            await fsPromises.writeFile('./data/products.json', JSON.stringify(products));
-        } catch (err) {
-            console.error(err);
-        }
+        const product = new ProductModel({
+            _id: parseInt(this.id),
+            name: this.name,
+            price: parseInt(this.price),
+            categoryId: parseInt(this.categoryId),
+        });
+        await product.save();
     }
-    //Update product
+
+    // Update product
     async update() {
-        const productIndex = products.findIndex(product => product.id === this.id);
-        if (productIndex !== -1) {
-            products[productIndex] = this;
-            try {
-                await fsPromises.writeFile('./data/products.json', JSON.stringify(products));
-            } catch (err) {
-                console.error(err);
-            }
+        const existingProduct = await ProductModel.findById(this.id);
+        if (existingProduct) {
+            existingProduct.name = this.name;
+            existingProduct.price = parseInt(this.price);
+            existingProduct.categoryId = parseInt(this.categoryId);
+            await existingProduct.save();
         } else {
-            throw new Error('Product not found in the database.');
+            throw new Error('Product not found for update.');
         }
     }
 }

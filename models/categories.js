@@ -1,38 +1,37 @@
-const fsPromises = require('fs').promises;
-const categories = require('../data/categories.json');
+const { CategoryModel } = require('../services/db');
 
 class Category {
     constructor(id, name) {
         this.id = id;
         this.name = name;
     }
-    //Add category
+
+    // Add category
     async save() {
         if (!this.id || !this.name) {
             throw new Error('Missing required fields for saving the category.');
         }
-        if (categories.find(category => category.id === this.id)) {
-            throw new Error('Id category already exists.');
+        const existingCategory = await CategoryModel.findById(parseInt(this.id));
+        if (existingCategory) {
+            throw new Error('Category with this ID already exists.');
         }
-        categories.push(this);
-        try {
-            await fsPromises.writeFile('./data/categories.json', JSON.stringify(categories));
-        } catch (err) {
-            console.error(err);
-        }
+        const newCategory = new CategoryModel({
+            _id: parseInt(this.id),
+            name: this.name,
+        });
+        console.log(newCategory);
+        await newCategory.save();
     }
-    //Update category
+
+    // Update category
     async update() {
-        const categoryIndex = categories.findIndex(category => category.id === this.id);
-        if (categoryIndex !== -1) {
-            categories[categoryIndex] = this;
-            try {
-                await fsPromises.writeFile('./data/categories.json', JSON.stringify(categories));
-            } catch (err) {
-                console.error(err);
-            }
+        const existingCategory = await CategoryModel.findById(this.id);
+
+        if (existingCategory) {
+            existingCategory.name = this.name;
+            await existingCategory.save();
         } else {
-            throw new Error('Category not found in the database.');
+            throw new Error('Category not found for update.');
         }
     }
 }

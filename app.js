@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const authenticateUser = require('./helper/auth.middleware');
+const authenticateUser = require('./middlewares/auth.middleware');
 
 const categoryController = require('./controllers/categoryController');
 const productController = require('./controllers/productController');

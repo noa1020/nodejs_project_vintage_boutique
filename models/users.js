@@ -1,7 +1,5 @@
-const fsPromises = require('fs').promises;
-const { error } = require('console');
-const users = require('../data/users.json');
 const bcrypt = require('bcrypt');
+const { UserModel } = require('../services/db');
 
 class User {
     constructor(id, name, password, userType) {
@@ -10,23 +8,26 @@ class User {
         this.password = password;
         this.userType = userType;
     }
+
     async save() {
         if (!this.id || !this.name || !this.password || !this.userType) {
             throw new Error('Missing required fields for saving the user.');
         }
-        if (users.find(user => user.id === this.id)) {
-            throw new Error('Id user already exists.');
-        }
-        // Hash the password before storing it
-        const hashedPassword = bcrypt.hashSync(this.password, 10);
-        this.password = hashedPassword;
-        users.push(this);
-        try {
-            await fsPromises.writeFile('./data/users.json', JSON.stringify(users));
-        } catch (err) {
-            console.error(err);
-        }
-    }
+        const existingUser = await UserModel.findById(this.id);
+        if (existingUser) {
+             throw new Error('User with this ID already exists.');
+         }
 
+        // Hash the password before storing it
+        const hashedPassword = await bcrypt.hash(this.password, 10);
+        const user = new UserModel({
+            _id: parseInt(this.id),
+            name: this.name,
+            password: hashedPassword,
+            userType: this.userType
+        });
+        await user.save();
+    }
 }
+
 module.exports = User;
